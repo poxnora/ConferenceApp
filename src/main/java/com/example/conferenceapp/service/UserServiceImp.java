@@ -3,6 +3,7 @@ package com.example.conferenceapp.service;
 import com.example.conferenceapp.dao.UserDao;
 import com.example.conferenceapp.exceptions.RecordNotFoundException;
 import com.example.conferenceapp.exceptions.UserServiceException;
+import com.example.conferenceapp.model.Lecture;
 import com.example.conferenceapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,10 +31,17 @@ public class UserServiceImp implements UserService {
 
     @Override
     public String get_LoginsAndEmails() {
-        List<User> users = userDao.findAll();
-        return users.toString();
-
+        List<User> users = get();
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (User l : users) {
+            sb.append(l.toString());
+        }
+        sb.append("{}]");
+        return sb.toString();
     }
+
+
 
     @Override
     public User getById(long id) {
@@ -44,13 +52,13 @@ public class UserServiceImp implements UserService {
     public User save(User user) throws UserServiceException {
         List<User> users = get();
         for (User u : users) {
-            if (u.getLogin().equals(user.getLogin()) && !u.getEmail().equals(user.getEmail())) {
-                throw new UserServiceException("Users with login: " + user.getLogin() + " exists");
-            } else if (!u.getLogin().equals(user.getLogin()) && u.getEmail().equals(user.getEmail())) {
+            if (u.getUsername().equals(user.getUsername()) && !u.getEmail().equals(user.getEmail())) {
+                throw new UserServiceException("Users with login: " + user.getUsername() + " exists");
+            } else if (!u.getUsername().equals(user.getUsername()) && u.getEmail().equals(user.getEmail())) {
                 throw new UserServiceException("Users with email: " + user.getEmail() + " exists");
-            } else if (u.getLogin().equals(user.getLogin()) && u.getEmail().equals(user.getEmail())) {
+            } else if (u.getUsername().equals(user.getUsername()) && u.getEmail().equals(user.getEmail())) {
                 throw new UserServiceException("Users already exists");
-            } else if (user.getRole() < 0 || user.getRole() > 2 || user.getLectures().size() > 5 || user.getPassword().length() < 6) {
+            } else if (user.getLectures().size() > 5 || user.getPassword().length() < 6) {
                 throw new UserServiceException("Invalid user");
             }
 
@@ -58,8 +66,8 @@ public class UserServiceImp implements UserService {
 
         User user1 = new User();
         user1.setEmail(user.getEmail());
-        user1.setLogin(user.getLogin());
-        user1.setRole(user.getRole());
+        user1.setUsername(user.getUsername());
+        user1.setAuthority(user.getAuthority());
         user1.setPassword(passwordEncoder.encode(user.getPassword()));
         return userDao.save(user1);
     }
@@ -75,28 +83,28 @@ public class UserServiceImp implements UserService {
         Optional<User> user1 = userDao.findById(id);
         List<User> users = get();
         for (User u : users) {
-            if (u.getLogin().equals(user.getLogin()) && !u.getEmail().equals(user.getEmail())) {
-                throw new UserServiceException("Users with login: " + user.getLogin() + " exists");
-            } else if (!u.getLogin().equals(user.getLogin()) && u.getEmail().equals(user.getEmail())) {
+            if (u.getUsername().equals(user.getUsername()) && !u.getEmail().equals(user.getEmail())) {
+                throw new UserServiceException("Users with login: " + user.getUsername() + " exists");
+            } else if (!u.getUsername().equals(user.getUsername()) && u.getEmail().equals(user.getEmail())) {
                 throw new UserServiceException("Users with email: " + user.getEmail() + " exists");
-            } else if (u.getLogin().equals(user.getLogin()) && u.getEmail().equals(user.getEmail())) {
+            } else if (u.getUsername().equals(user.getUsername()) && u.getEmail().equals(user.getEmail())) {
                 throw new UserServiceException("Users already exists");
-            } else if (user.getRole() < 0 || user.getRole() > 2 || user.getLectures().size() > 5 || user.getPassword().length() < 6) {
+            } else if (user.getLectures().size() > 5 || user.getPassword().length() < 6) {
                 throw new UserServiceException("Invalid user");
             }
         }
         if (user1.isPresent()) {
             User user_modified = user1.get();
             user_modified.setEmail(user.getEmail());
-            user_modified.setLogin(user.getLogin());
-            user_modified.setRole(user.getRole());
+            user_modified.setUsername(user.getUsername());
+            user_modified.setAuthority(user.getAuthority());
             user_modified.setPassword(user.getPassword());
             return userDao.save(user_modified);
         } else {
             User user_new = new User();
             user_new.setEmail(user.getEmail());
-            user_new.setLogin(user.getLogin());
-            user_new.setRole(user.getRole());
+            user_new.setUsername(user.getUsername());
+            user_new.setAuthority(user.getAuthority());
             user_new.setPassword(passwordEncoder.encode(user.getPassword()));
             return userDao.save(user_new);
         }
