@@ -15,7 +15,6 @@ public class ConferenceServiceImp implements ConferenceService {
 
     @Override
     public String get() {
-        Conference conference = new Conference(LocalDateTime.of(2021, 6, 1, 10, 45), LocalDateTime.of(2021, 6, 1, 15, 45), LocalDateTime.of(2021, 6, 1, 10, 0), LocalDateTime.of(2021, 6, 1, 12, 0), LocalDateTime.of(2021, 6, 1, 13, 45));
-        return conference.toString();
+        return new Conference().toString();
     }
 }

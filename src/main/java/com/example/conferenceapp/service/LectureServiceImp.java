@@ -122,7 +122,7 @@ public class LectureServiceImp implements LectureService {
             Lecture lecture_modified = lectureOptional.get();
             if (lecture_modified.getParticipants().size() < 5) {
                 Optional<User> user_email = userDao.findByemail(email);
-                Optional<User> user_login = userDao.findBylogin(login);
+                Optional<User> user_login = userDao.findByusername(login);
                 if (user_email.isPresent() && user_login.isPresent()) {
                     User user_modified = user_email.get();
                     User user2 = user_login.get();
@@ -157,7 +157,7 @@ public class LectureServiceImp implements LectureService {
 
     @Override
     public String getLectures(String login) throws UserServiceException {
-        Optional<User> user = userDao.findBylogin(login);
+        Optional<User> user = userDao.findByusername(login);
         if (user.isPresent()) {
             User user1 = user.get();
             Set<Lecture> lectures = user1.getLectures();
@@ -179,7 +179,7 @@ public class LectureServiceImp implements LectureService {
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
             Optional<User> user_email = userDao.findByemail(email);
-            Optional<User> user_login = userDao.findBylogin(login);
+            Optional<User> user_login = userDao.findByusername(login);
             if (user_email.isPresent() && user_login.isPresent()) {
                 User user1 = user_email.get();
                 User user2 = user_login.get();
