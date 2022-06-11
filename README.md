@@ -12,7 +12,7 @@ Założenia:
 
 Aplikacja wykorzystuje: Java 18, Spring Boot(web, security, jpa, test), H2, Junit, Maven, REST.  
 
-Baza_danych: http://localhost:{nr}/h2-console
+Baza_danych: http://localhost:8080/h2-console
 
 Uruchomienie: spring-boot:run
 
