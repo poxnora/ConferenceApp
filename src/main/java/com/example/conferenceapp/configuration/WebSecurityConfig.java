@@ -31,10 +31,20 @@ public class WebSecurityConfig{
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.builder()
                 .username("user")
-                .password("password")
-                .roles("Admin")
+                .password("user")
+                .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password("{bcrypt}$2a$15$wxf4ygLmpRl0wAsxUoJETejEFCSDsoeCbdZYGcxG.XFCHgg6l5r1e")
+                .roles("USER", "ADMIN")
+                .build();
+        UserDetails prof = User.builder()
+                .username("professor")
+                .password("{bcrypt}$2a$15$vreNMk4agKRcudcJ7o8q1OxQXhefteIW6WJq/9LP1UqzJRMV8jvCy")
+                .roles("USER", "PROF")
+                .build();
+        return new InMemoryUserDetailsManager(user,prof,admin);
     }
 
     @Bean
