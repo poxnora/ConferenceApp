@@ -16,14 +16,16 @@ Baza danych: http://localhost:8080/h2-console
 
 Uruchomienie: spring-boot:run
 
-Testy: mvn test
+
 
 
 
 Funkcjonalność:
 
 (ROLA) - oznacza, że do wykonania danego zapytania wymagana jest odpowiednia rola
-
+"user1", "password1" (USER)
+"admin", "admin" (ADMIN)
+"prof", "prof" (PROF)
 
 KONFERENCJA
 
