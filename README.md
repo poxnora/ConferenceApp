@@ -23,9 +23,13 @@ Uruchomienie: spring-boot:run
 Funkcjonalność:
 
 (ROLA) - oznacza, że do wykonania danego zapytania wymagana jest odpowiednia rola
+
 "user1", "password1" (USER)
+
 "admin", "admin" (ADMIN)
+
 "prof", "prof" (PROF)
+
 
 KONFERENCJA
 
