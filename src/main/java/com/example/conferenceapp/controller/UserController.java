@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping(value = "/show")
     public List<User> getAllUsers() throws RecordNotFoundException {
 
         List<User> users = userService.get();
@@ -31,7 +31,7 @@ public class UserController {
 
     }
 
-    @GetMapping(value = "/show", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAllUsersLoginAndEmails() throws RecordNotFoundException {
 
         return userService.get_LoginsAndEmails();
@@ -39,7 +39,7 @@ public class UserController {
 
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/show/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
         return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }

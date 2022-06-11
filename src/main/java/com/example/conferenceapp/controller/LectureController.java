@@ -20,17 +20,17 @@ public class LectureController {
     @Autowired
     private LectureService lectureService;
 
-    @GetMapping
+    @GetMapping("/show")
     public List<Lecture> getAllLectures() {
         return lectureService.get();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/show/{id}")
     public ResponseEntity<Lecture> getLectureById(@PathVariable("id") long id) {
         return new ResponseEntity<>(lectureService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/show", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLectureTitles() {
         return lectureService.get_plan();
     }
@@ -40,7 +40,7 @@ public class LectureController {
         return lectureService.lecturePopularity();
     }
 
-    @GetMapping(value = "/themepopularity", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/theme_popularity", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLectureThemePopularity() {
         return lectureService.themePopularity();
     }
