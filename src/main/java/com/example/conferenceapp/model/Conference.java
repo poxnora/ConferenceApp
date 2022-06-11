@@ -9,70 +9,50 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class Conference {
-    private LocalDateTime start_time;
-    private LocalDateTime end_time;
-    private LocalDateTime first_lecture;
-    private LocalDateTime second_lecture;
-    private LocalDateTime third_lecture;
+    private static final LocalDateTime start_time = LocalDateTime.of(2021, 6, 1, 10, 0);
+    private static final LocalDateTime end_time = LocalDateTime.of(2021, 6, 1, 15, 45);
+    private static final LocalDateTime first_lecture = LocalDateTime.of(2021, 6, 1, 10, 0);
+    private static final LocalDateTime second_lecture = LocalDateTime.of(2021, 6, 1, 12, 0);
+    private static final LocalDateTime third_lecture = LocalDateTime.of(2021, 6, 1, 14, 0);
 
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy  HH:mm:ss");
 
-    public Conference() {
+     public Conference() {
 
     }
 
-    public Conference(LocalDateTime start_time, LocalDateTime end_time, LocalDateTime first_lecture, LocalDateTime second_lecture, LocalDateTime third_lecture) {
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.first_lecture = first_lecture;
-        this.second_lecture = second_lecture;
-        this.third_lecture = third_lecture;
-    }
 
 
-    public LocalDateTime getStart_time() {
+    public static LocalDateTime getStart_time() {
         return start_time;
     }
 
-    public void setStart_time(LocalDateTime start_time) {
-        this.start_time = start_time;
-    }
-
-    public LocalDateTime getEnd_time() {
+    public static LocalDateTime getEnd_time() {
         return end_time;
     }
 
-    public void setEnd_time(LocalDateTime end_time) {
-        this.end_time = end_time;
-    }
-
-    public LocalDateTime getFirst_lecture() {
+    public static LocalDateTime getFirst_lecture() {
         return first_lecture;
     }
 
-    public void setFirst_lecture(LocalDateTime first_lecture) {
-        this.first_lecture = first_lecture;
-    }
 
-    public LocalDateTime getSecond_lecture() {
+    public static LocalDateTime getSecond_lecture() {
         return second_lecture;
     }
 
-    public void setSecond_lecture(LocalDateTime second_lecture) {
-        this.second_lecture = second_lecture;
-    }
 
-    public LocalDateTime getThird_lecture() {
+    public static LocalDateTime getThird_lecture() {
         return third_lecture;
     }
 
-    public void setThird_lecture(LocalDateTime third_lecture) {
-        this.third_lecture = third_lecture;
-    }
 
+    public static DateTimeFormatter getFormatter() {
+        return formatter;
+    }
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy  HH:mm:ss");
+
         return "{ " +
                 "\"start_time\"" + ":" + "\"" + formatter.format(start_time) + "\"" +
                 ", \"end_time\"" + ":" + "\"" + formatter.format(end_time) + "\"" +

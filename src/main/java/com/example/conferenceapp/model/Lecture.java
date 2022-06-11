@@ -1,12 +1,14 @@
 package com.example.conferenceapp.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "lectures")
-public class Lecture {
+public class Lecture{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -83,12 +85,24 @@ public class Lecture {
         this.participants = participants;
     }
 
-    @Override
-    public String toString() {
 
-        return "{ " +
-                "\"title\"" + ":" + "\"" + title + "\"" +
-                ", \"starts\"" + ":" + "\"" + starts + "\"" +
-                "},";
+    public String toString() {
+        if (starts == 1) {
+            return "{ " +
+                    "\"title\"" + ":" + "\"" + title + "\"" +
+                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getFirst_lecture()) + "\"" +
+                    "},";
+        } else if (starts == 2) {
+            return "{ " +
+                    "\"title\"" + ":" + "\"" + title + "\"" +
+                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getSecond_lecture()) + "\"" +
+                    "},";
+        } else if (starts == 3) {
+            return "{ " +
+                    "\"title\"" + ":" + "\"" + title + "\"" +
+                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getThird_lecture()) + "\"" +
+                    "},";
+        }
+        return "";
     }
 }

@@ -1,60 +1,58 @@
 package com.example.conferenceapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name="users")
-public class User
-{
+@Table(name = "users")
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(nullable = false, length = 30)
-    private String login;
+    private String username;
     @Column(nullable = false, length = 50)
     private String email;
     @Column(nullable = false, length = 70)
     private String password;
 
-    @Column(nullable = false, length = 1)
-    private int role;
+    @Column(nullable = false, length = 5)
+    private String authority;
 
     @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "users_lectures", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name="lecture_id")})
+    @JoinTable(name = "users_lectures", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "lecture_id")})
     @JsonIgnore
     Set<Lecture> lectures = new HashSet<>();
 
-    public User(long id, String login, String email, String password, int role,Set<Lecture> lectures) {
+    public User(long id, String username, String email, String password, String authority, Set<Lecture> lectures) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.authority = authority;
         this.lectures = lectures;
     }
 
-    public User(String login, String email, String password, int role) {
+    public User(String username, String email, String password, String authority) {
 
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.authority = authority;
 
     }
 
-    public User(long id, String login, String email, String password,int role) {
+    public User(long id, String username, String email, String password, String authority) {
         this.id = id;
-        this.login = login;
+        this.username = username;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.authority = authority;
 
     }
 
@@ -66,12 +64,12 @@ public class User
         this.id = id;
     }
 
-    public int getRole() {
-        return role;
+    public String getAuthority() {
+        return authority;
     }
 
-    public void setRole(int role) {
-        this.role = role;
+    public void setAuthority(String role) {
+        this.authority = role;
     }
 
     public Set<Lecture> getLectures() {
@@ -86,12 +84,12 @@ public class User
         return id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUsername() {
+        return username;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setUsername(String login) {
+        this.username = login;
     }
 
     public String getEmail() {
@@ -108,11 +106,14 @@ public class User
 
     @Override
     public String toString() {
-        return "User{" +
-                "login='" + login + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return "{ " +
+                "\"username\"" + ":" + "\"" + username + "\"" +
+                ", \"email\"" + ":" + "\"" + email + "\"" +
+                "},";
     }
+
+
+
 
     public void setPassword(String password) {
         this.password = password;
