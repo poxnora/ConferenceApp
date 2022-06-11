@@ -55,11 +55,20 @@ GET "/lectures/theme_popularity" - Popularność tematów ("PROF", "ADMIN")
 
 GET "/lectures/user/" - Login w body, lista wykładów danego użytkownika ("USER", "ADMIN")
 
+{
+        "username": "user1",   
+},
+
 POST "/lectures/add/" - Lektura w body, dodanie nowej lektury ("ADMIN")
 
 PUT "/lectures/add/{id}" - Lektura w body, edycja lub dodanie nowej wykładu ("ADMIN")
 
 PUT "/lectures/{id}/add_user" - Login i email w body, dodanie użytkownika do danego wykładu ("USER", "ADMIN")
+
+{
+        "username": "user1",
+        "email": "user1@emaiddasdasdl.com"
+},
 
 PUT "/lectures/{id}/cancel_user" - Login i email w body, usuniecie użytkownika z danego wykładu  ("USER", "PROF", "ADMIN")
 
@@ -77,6 +86,8 @@ GET "/users/show/" - Lista użytkowników ("ADMIN")
 GET "/users/show/{id}" - Lista użytkowników ("ADMIN")
 
 PUT "/users/email/" - Stary email i nowy w body, zmiana emaila ("USER", "ADMIN")
+
+{"old_email":"user1@email.com","new_email":"user1@emaiddasdasdl.com"}
 
 POST "/users/add/" - User w body, dodanie nowego użytkownika ("ADMIN")
 
