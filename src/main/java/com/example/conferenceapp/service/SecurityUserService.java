@@ -9,11 +9,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class SecurityUserService implements UserDetailsService{
+public class SecurityUserService implements UserDetailsService {
 
 
     @Autowired
@@ -24,11 +23,11 @@ public class SecurityUserService implements UserDetailsService{
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
 
-        Optional<User> user =	userRepo.findByusername(userName);
+        Optional<User> user = userRepo.findByusername(userName);
         user.orElseThrow
-                (()->new UsernameNotFoundException("not found"+userName));
+                (() -> new UsernameNotFoundException("not found" + userName));
 
-        return user.map(SecurityUser:: new).get();
+        return user.map(SecurityUser::new).get();
 
     }
 

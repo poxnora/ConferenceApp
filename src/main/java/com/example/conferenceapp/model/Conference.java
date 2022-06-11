@@ -17,10 +17,9 @@ public class Conference {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy  HH:mm:ss");
 
-     public Conference() {
+    public Conference() {
 
     }
-
 
 
     public static LocalDateTime getStart_time() {

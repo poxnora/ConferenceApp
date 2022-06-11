@@ -1,7 +1,6 @@
 package com.example.conferenceapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -9,7 +8,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User  {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,8 +110,6 @@ public class User  {
                 ", \"email\"" + ":" + "\"" + email + "\"" +
                 "},";
     }
-
-
 
 
     public void setPassword(String password) {

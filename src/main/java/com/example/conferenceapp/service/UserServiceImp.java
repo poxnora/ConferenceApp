@@ -3,7 +3,6 @@ package com.example.conferenceapp.service;
 import com.example.conferenceapp.dao.UserDao;
 import com.example.conferenceapp.exceptions.RecordNotFoundException;
 import com.example.conferenceapp.exceptions.UserServiceException;
-import com.example.conferenceapp.model.Lecture;
 import com.example.conferenceapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +39,6 @@ public class UserServiceImp implements UserService {
         sb.append("{}]");
         return sb.toString();
     }
-
 
 
     @Override

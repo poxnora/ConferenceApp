@@ -1,14 +1,12 @@
 package com.example.conferenceapp.model;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "lectures")
-public class Lecture{
+public class Lecture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

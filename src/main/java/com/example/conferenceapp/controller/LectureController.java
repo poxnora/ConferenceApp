@@ -30,7 +30,7 @@ public class LectureController {
         return new ResponseEntity<>(lectureService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLectureTitles() {
         return lectureService.get_plan();
     }
