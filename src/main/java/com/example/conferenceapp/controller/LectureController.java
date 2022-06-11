@@ -30,7 +30,7 @@ public class LectureController {
         return new ResponseEntity<>(lectureService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/",produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLectureTitles() {
         return lectureService.get_plan();
     }
@@ -47,7 +47,7 @@ public class LectureController {
 
     @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getLectureByUserLogin(@RequestBody Map<String, String> data) throws UserServiceException {
-        return (lectureService.getLectures(data.get("login")));
+        return (lectureService.getLectures(data.get("username")));
     }
 
     @PostMapping(path = "/add")
@@ -62,12 +62,12 @@ public class LectureController {
 
     @PutMapping(path = "{id}/add_user")
     public ResponseEntity<Lecture> addUser(@PathVariable("id") long id, @RequestBody Map<String, String> data) throws UserServiceException, LectureServiceException, IOException {
-        return new ResponseEntity<>(lectureService.addUser(id, data.get("login"), data.get("email")), HttpStatus.OK);
+        return new ResponseEntity<>(lectureService.addUser(id, data.get("username"), data.get("email")), HttpStatus.OK);
     }
 
     @PutMapping(path = "{id}/cancel_user")
     public ResponseEntity<Lecture> cancelLectureUser(@PathVariable("id") long id, @RequestBody Map<String, String> data) throws UserServiceException, LectureServiceException {
-        return new ResponseEntity<>(lectureService.cancelUser(id, data.get("login"), data.get("email")), HttpStatus.OK);
+        return new ResponseEntity<>(lectureService.cancelUser(id, data.get("username"), data.get("email")), HttpStatus.OK);
     }
 
     @DeleteMapping(path = "/delete/{id}")

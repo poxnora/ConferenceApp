@@ -8,11 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/conference")
+@RequestMapping(path = "/")
 public class ConferenceController {
 
     @Autowired
     private ConferenceService conferenceService;
+
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public String getDetails() {
