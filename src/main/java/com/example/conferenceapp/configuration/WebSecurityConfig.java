@@ -49,11 +49,10 @@ public class WebSecurityConfig{
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().antMatchers("/").hasRole("Admin")
-                .and()
-                .authorizeRequests().antMatchers("/h2-console/**").permitAll()
-                .and()
-                .authorizeRequests().antMatchers("/h2-console/**").permitAll()
+        httpSecurity.authorizeRequests().antMatchers("/").permitAll().anyRequest().authenticated()
+                .antMatchers("/conference").hasAnyRole("USER","PROF","ADMIN")
+                .antMatchers("/lectures").hasAnyRole("USER","PROF","ADMIN")
+                .antMatchers("/h2-console/**").permitAll()
                 .and()
                 .headers().frameOptions().disable()
                 .and()
