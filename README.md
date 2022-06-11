@@ -56,8 +56,7 @@ GET "/lectures/theme_popularity" - Popularność tematów ("PROF", "ADMIN")
 GET "/lectures/user/" - Login w body, lista wykładów danego użytkownika ("USER", "ADMIN")
 
 {
-        "username": "user1",   
-},
+        "username": "user1",   },
 
 POST "/lectures/add/" - Lektura w body, dodanie nowej lektury ("ADMIN")
 
