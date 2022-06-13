@@ -17,8 +17,12 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/lectures")
 public class LectureController {
-    @Autowired
-    private LectureService lectureService;
+
+    public LectureController(LectureService lectureService) {
+        this.lectureService = lectureService;
+    }
+
+    private final LectureService lectureService;
 
     @GetMapping("/show")
     public List<Lecture> getAllLectures() {

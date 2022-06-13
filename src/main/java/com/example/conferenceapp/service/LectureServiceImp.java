@@ -19,10 +19,16 @@ import java.util.Set;
 @Service
 public class LectureServiceImp implements LectureService {
 
-    @Autowired
-    private LectureDao lectureDao;
-    @Autowired
-    private UserDao userDao;
+
+    private final LectureDao lectureDao;
+
+    public LectureServiceImp(LectureDao lectureDao, UserDao userDao) {
+        this.lectureDao = lectureDao;
+        this.userDao = userDao;
+    }
+
+
+    private final UserDao userDao;
 
     @Override
     public List<Lecture> get() {

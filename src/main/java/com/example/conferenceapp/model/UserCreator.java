@@ -10,10 +10,15 @@ import javax.annotation.PostConstruct;
 @Component
 class UserCreator {
 
-    @Autowired
-    private UserDao userDao;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+    private final UserDao userDao;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UserCreator(UserDao userDao, PasswordEncoder passwordEncoder) {
+        this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostConstruct
     public void init() {

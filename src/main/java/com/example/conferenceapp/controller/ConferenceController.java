@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/")
 public class ConferenceController {
 
-    @Autowired
-    private ConferenceService conferenceService;
+    public ConferenceController(ConferenceService conferenceService) {
+        this.conferenceService = conferenceService;
+    }
+
+
+    private final ConferenceService conferenceService;
 
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

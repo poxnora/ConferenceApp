@@ -15,9 +15,12 @@ import java.util.Optional;
 public class SecurityUserService implements UserDetailsService {
 
 
-    @Autowired
-    UserDao userRepo;
 
+    private final UserDao userRepo;
+
+    public SecurityUserService(UserDao userRepo) {
+        this.userRepo = userRepo;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {

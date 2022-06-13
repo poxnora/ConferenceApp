@@ -1,17 +1,15 @@
 package com.example.conferenceapp;
 
-import com.example.conferenceapp.model.Lecture;
-import com.example.conferenceapp.model.User;
-import org.json.JSONObject;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
 public class TestConference extends TestAbstract{
 
     @Override

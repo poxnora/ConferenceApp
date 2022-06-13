@@ -2,7 +2,7 @@ package com.example.conferenceapp.exceptions;
 
 public class UserServiceException extends Exception {
 
-    private static final long serialVersionUID = -470180507998010368L;
+
 
     public UserServiceException() {
         super();

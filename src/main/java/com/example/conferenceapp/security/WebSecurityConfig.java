@@ -18,8 +18,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    @Autowired
-    private SecurityUserService securityUserService;
+    public WebSecurityConfig(SecurityUserService securityUserService) {
+        this.securityUserService = securityUserService;
+    }
+
+
+    private final SecurityUserService securityUserService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -42,24 +46,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers("/lectures").hasAnyRole("USER", "PROF", "ADMIN")
-                .antMatchers("/users").hasAnyRole("PROF", "ADMIN")
-                .antMatchers("lectures/show").hasRole("ADMIN")
-                .antMatchers("lectures/show/*").hasRole("ADMIN")
-                .antMatchers("lectures/popularity").hasAnyRole("PROF", "ADMIN")
-                .antMatchers("lectures/theme_popularity").hasAnyRole("PROF", "ADMIN")
-                .antMatchers("lectures/user").hasAnyRole("USER", "ADMIN")
-                .antMatchers("lectures/add").hasRole("ADMIN")
-                .antMatchers("lectures/add/*").hasRole("ADMIN")
-                .antMatchers("lectures/*/add_user").hasAnyRole("USER", "ADMIN")
-                .antMatchers("lectures/*/cancel_user").hasAnyRole("USER", "PROF", "ADMIN")
-                .antMatchers("lectures/delete/*").hasRole("ADMIN")
-                .antMatchers("users/show").hasRole("ADMIN")
-                .antMatchers("users/show/*").hasRole("ADMIN")
-                .antMatchers("users/add").hasRole("ADMIN")
-                .antMatchers("users/add/*").hasRole("ADMIN")
-                .antMatchers("users/email").hasAnyRole("USER", "ADMIN")
-                .antMatchers("users/delete/*").hasRole("ADMIN")
+                .antMatchers("/lectures").hasAnyAuthority("USER", "PROF", "ADMIN")
+                .antMatchers("/users").hasAnyAuthority("PROF", "ADMIN")
+                .antMatchers("/lectures/show").hasAnyAuthority("ADMIN")
+                .antMatchers("/lectures/show/*").hasAnyAuthority("ADMIN")
+                .antMatchers("/lectures/popularity").hasAnyAuthority("PROF", "ADMIN")
+                .antMatchers("/lectures/theme_popularity").hasAnyAuthority("PROF", "ADMIN")
+                .antMatchers("/lectures/user").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers("/lectures/add").hasAnyAuthority("ADMIN")
+                .antMatchers("/lectures/add/*").hasAnyAuthority("ADMIN")
+                .antMatchers("/lectures/*/add_user").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers("/lectures/*/cancel_user").hasAnyAuthority("USER", "PROF", "ADMIN")
+                .antMatchers("/lectures/delete/*").hasAnyAuthority("ADMIN")
+                .antMatchers("/users/show").hasAnyAuthority("ADMIN")
+                .antMatchers("/users/show/*").hasAnyAuthority("ADMIN")
+                .antMatchers("/users/add").hasAnyAuthority("ADMIN")
+                .antMatchers("/users/add/*").hasAnyAuthority("ADMIN")
+                .antMatchers("/users/email").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers("/users/delete/*").hasAnyAuthority("ADMIN")
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated().and().csrf().disable().headers().frameOptions().disable().and()
                 .httpBasic().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

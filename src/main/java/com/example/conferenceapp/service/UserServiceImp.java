@@ -16,11 +16,16 @@ import java.util.regex.Pattern;
 @Service
 public class UserServiceImp implements UserService {
 
-    @Autowired
-    private UserDao userDao;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserDao userDao;
+
+    public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
+        this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> get() {
