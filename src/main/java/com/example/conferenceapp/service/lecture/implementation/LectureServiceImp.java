@@ -1,18 +1,19 @@
-package com.example.conferenceapp.service;
+package com.example.conferenceapp.service.lecture.implementation;
 
 import com.example.conferenceapp.dao.LectureDao;
 import com.example.conferenceapp.dao.UserDao;
-import com.example.conferenceapp.exceptions.LectureServiceException;
-import com.example.conferenceapp.exceptions.RecordNotFoundException;
-import com.example.conferenceapp.exceptions.UserServiceException;
-import com.example.conferenceapp.helper.toFile;
+import com.example.conferenceapp.exception.RecordNotFoundException;
+import com.example.conferenceapp.exception.RecordNotSavedException;
+import com.example.conferenceapp.helper.ToFile;
+import com.example.conferenceapp.model.Conference;
 import com.example.conferenceapp.model.Lecture;
-import com.example.conferenceapp.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.conferenceapp.model.user.User;
+import com.example.conferenceapp.service.lecture.LectureService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,14 +22,13 @@ public class LectureServiceImp implements LectureService {
 
 
     private final LectureDao lectureDao;
+    private final UserDao userDao;
+
 
     public LectureServiceImp(LectureDao lectureDao, UserDao userDao) {
         this.lectureDao = lectureDao;
         this.userDao = userDao;
     }
-
-
-    private final UserDao userDao;
 
     @Override
     public List<Lecture> get() {
@@ -36,65 +36,65 @@ public class LectureServiceImp implements LectureService {
     }
 
     @Override
-    public String get_plan() {
+    public String getPlan() {
         List<Lecture> lectures = get();
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (Lecture l : lectures) {
-            sb.append(l.toString());
+
+        for (int i = 0; i < lectures.size(); i++) {
+            sb.append(lectures.get(i).toString());
+            if (i == lectures.size() - 1) {
+                sb.append("]");
+            } else {
+                sb.append(",");
+            }
         }
-        sb.append("{}]");
         return sb.toString();
     }
 
     @Override
-    public Lecture getById(long id) {
+    public Lecture getById(Long id) {
         return lectureDao.findById(id).orElseThrow(() -> new RecordNotFoundException("No lectures with id: " + id));
     }
 
     @Override
-    public Lecture save(Lecture lecture) throws LectureServiceException {
+    public Lecture save(Lecture lecture) {
 
         List<Lecture> lectures = lectureDao.findAll();
-        if (lecture.getTheme() < 1 || lecture.getTheme() > 3)
-            throw new LectureServiceException("Invalid theme");
+        if (lecture.getTheme() < 1 || lecture.getTheme() > Conference.getThemes())
+            throw new RecordNotSavedException("Invalid theme");
         int count = 0;
         for (Lecture l : lectures) {
-            if (l.getTheme() == lecture.getTheme()) {
-                count += 1;
-                if (count > 2) {
-                    throw new LectureServiceException("Maximum lectures reached");
+            if (Objects.equals(l.getTheme(), lecture.getTheme())) {
+
+                if (count > Conference.getThemes()) {
+                    throw new RecordNotSavedException("Maximum lectures with that theme reached");
                 }
+                count += 1;
             }
         }
         return lectureDao.save(lecture);
     }
 
     @Override
-    public void delete(long id) {
-        lectureDao.findById(id).orElseThrow(() -> new RecordNotFoundException("No lectures with id: " + id));
-        lectureDao.deleteById(id);
-    }
-
-    @Override
-    public Lecture updateOrSave(long id, Lecture lecture) throws LectureServiceException {
+    public Lecture updateOrSave(Long id, Lecture lecture) {
         Optional<Lecture> lectureOptional = lectureDao.findById(id);
-        List<Lecture> lectures = get();
-        if (lecture.getTheme() < 1 || lecture.getTheme() > 3)
-            throw new LectureServiceException("Invalid theme");
+        List<Lecture> lectures = lectureDao.findAll();
+        if (lecture.getTheme() < 1 || lecture.getTheme() > Conference.getThemes())
+            throw new RecordNotSavedException("Invalid theme");
         int count = 0;
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
-
             for (Lecture l : lectures) {
+                if (Objects.equals(l.getTheme(), lecture.getTheme())) {
 
-                if (l.getTheme() == lecture.getTheme()) {
-                    count += 1;
-                    if (count > 2) {
-                        throw new LectureServiceException("Maximum lectures reached");
+                    if (count > Conference.getThemes()) {
+                        throw new RecordNotSavedException("Maximum lectures with that theme reached");
                     }
+                    count += 1;
                 }
             }
+
             lecture_modified.setParticipants(lecture.getParticipants());
             lecture_modified.setTheme(lecture.getTheme());
             lecture_modified.setTitle(lecture.getTitle());
@@ -103,12 +103,12 @@ public class LectureServiceImp implements LectureService {
         } else {
             Lecture lecture_new = new Lecture();
             for (Lecture l : lectures) {
+                if (Objects.equals(l.getTheme(), lecture.getTheme())) {
 
-                if (l.getTheme() == lecture.getTheme()) {
-                    count += 1;
-                    if (count > 2) {
-                        throw new LectureServiceException("Maximum lectures reached");
+                    if (count > Conference.getThemes()) {
+                        throw new RecordNotSavedException("Maximum lectures with that theme reached");
                     }
+                    count += 1;
                 }
             }
 
@@ -122,38 +122,38 @@ public class LectureServiceImp implements LectureService {
 
 
     @Override
-    public Lecture addUser(long id, String login, String email) throws LectureServiceException, UserServiceException, IOException {
+    public Lecture addUser(Long id, String login, String email) throws IOException {
         Optional<Lecture> lectureOptional = lectureDao.findById(id);
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
-            if (lecture_modified.getParticipants().size() < 5) {
-                Optional<User> user_email = userDao.findByemail(email);
-                Optional<User> user_login = userDao.findByusername(login);
+            if (lecture_modified.getParticipants().size() < Conference.getParticipants_per_lecture()) {
+                Optional<User> user_email = userDao.findByEmail(email);
+                Optional<User> user_login = userDao.findByUsername(login);
                 if (user_email.isPresent() && user_login.isPresent()) {
                     User user_modified = user_email.get();
                     User user2 = user_login.get();
                     if (user_modified == user2) {
                         for (Lecture l : user_modified.getLectures()) {
-                            if (l.getStarts() == lecture_modified.getStarts())
-                                throw new LectureServiceException("Cannot enroll, you've already joined lecture at this hour");
+                            if (Objects.equals(l.getStarts(), lecture_modified.getStarts()))
+                                throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
                         }
                         Set<User> new_participants = lecture_modified.getParticipants();
-                        Set<Lecture> new_lectures = user_modified.getLectures();
+                        List<Lecture> new_lectures = user_modified.getLectures();
                         new_participants.add(user_modified);
                         new_lectures.add(lecture_modified);
                         lecture_modified.setParticipants(new_participants);
                         user_modified.setLectures(new_lectures);
-                        toFile.saveFile("powiadomienia.txt", user_modified.getEmail() + " Succesful reservation " + lecture_modified.getTitle());
+                        ToFile.saveFile("powiadomienia.txt", user_modified.getEmail() + " Succesful reservation " + lecture_modified.getTitle());
                         return lectureDao.save(lecture_modified);
 
                     } else {
-                        throw new UserServiceException("Invalid login or email");
+                        throw new RecordNotSavedException("Invalid login or email");
                     }
                 } else {
-                    throw new UserServiceException("Invalid login or email");
+                    throw new RecordNotSavedException("Invalid login or email");
                 }
             } else {
-                throw new LectureServiceException("Lecture with id: " + id + " is full");
+                throw new RecordNotSavedException("Lecture with id: " + id + " is full");
             }
         } else {
             throw new RecordNotFoundException("No lecture with id: " + id);
@@ -161,52 +161,34 @@ public class LectureServiceImp implements LectureService {
 
     }
 
-    @Override
-    public String getLectures(String login) throws UserServiceException {
-        Optional<User> user = userDao.findByusername(login);
-        if (user.isPresent()) {
-            User user1 = user.get();
-            Set<Lecture> lectures = user1.getLectures();
-            StringBuilder sb = new StringBuilder();
-            sb.append("[");
-            for (Lecture l : lectures) {
-                sb.append("{" + "\"title\":" + "\"").append(l.getTitle()).append("\"").append("},");
-            }
-            sb.append("{}]");
-            return sb.toString();
-        } else {
-            throw new UserServiceException("No users with login: " + login);
-        }
-    }
 
     @Override
-    public Lecture cancelUser(long id, String login, String email) throws LectureServiceException, UserServiceException {
+    public Lecture cancelUser(Long id, String login, String email) {
         Optional<Lecture> lectureOptional = lectureDao.findById(id);
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
-            Optional<User> user_email = userDao.findByemail(email);
-            Optional<User> user_login = userDao.findByusername(login);
+            Optional<User> user_email = userDao.findByEmail(email);
+            Optional<User> user_login = userDao.findByUsername(login);
             if (user_email.isPresent() && user_login.isPresent()) {
-                User user1 = user_email.get();
-                User user2 = user_login.get();
-                if (user1 == user2) {
-                    for (Lecture l : user1.getLectures()) {
-                        if (l == lecture_modified) {
-                            Set<Lecture> new_lectures = user1.getLectures();
+                if (user_email.get().equals(user_login.get())) {
+                    User user = user_email.get();
+                    for (Lecture l : user.getLectures()) {
+                        if (l.equals(lecture_modified)) {
+                            List<Lecture> new_lectures = user.getLectures();
                             new_lectures.remove(l);
                             Set<User> new_participants = lecture_modified.getParticipants();
-                            new_participants.remove(user1);
+                            new_participants.remove(user);
                             lecture_modified.setParticipants(new_participants);
-                            user1.setLectures(new_lectures);
+                            user.setLectures(new_lectures);
                             return lectureDao.save(lecture_modified);
                         }
                     }
-                    throw new LectureServiceException("User with login: " + login + " didn't join lecture with id: " + id);
+                    throw new RecordNotSavedException("User with login: " + login + " didn't join lecture with id: " + id);
                 } else {
-                    throw new UserServiceException("Invalid login or email");
+                    throw new RecordNotSavedException("Invalid login or email");
                 }
             }
-            throw new UserServiceException("Invalid login or email");
+            throw new RecordNotSavedException("Invalid login or email");
 
         } else {
             throw new RecordNotFoundException("No lecture with id: " + id);
@@ -219,19 +201,19 @@ public class LectureServiceImp implements LectureService {
         StringBuilder sb = new StringBuilder();
         int lecture_number = 1;
         sb.append("[");
-        for (Lecture l : lectures) {
+        for (int i = 0; i < lectures.size(); i++) {
 
             sb.append("{\"Lecture\": ");
             sb.append(lecture_number);
             sb.append(",");
             sb.append(" \"Popularity\": ");
-            sb.append(((float) l.getParticipants().size() / 15) * 100);
+            sb.append(((float) lectures.get(i).getParticipants().size() / 15) * 100);
             lecture_number += 1;
-            sb.append("},");
-
-
+            if (i != lectures.size() - 1)
+                sb.append("},");
+            else
+                sb.append("}]");
         }
-        sb.append("{}]");
         return sb.toString();
     }
 
@@ -254,11 +236,11 @@ public class LectureServiceImp implements LectureService {
             }
             sb.append((float) users_number / 15 * 100);
             users_number = 0;
-            sb.append("},");
-
-
+            if (i != 3)
+                sb.append("},");
+            else
+                sb.append("}]");
         }
-        sb.append("{}]");
         return sb.toString();
     }
 

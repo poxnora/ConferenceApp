@@ -1,35 +1,37 @@
-package com.example.conferenceapp.exceptions;
+package com.example.conferenceapp.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
-@ControllerAdvice
+@RestControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
-        List<String> details = new ArrayList<>();
-        details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse("Server Error", details);
-        return new ResponseEntity(error, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     @ExceptionHandler(RecordNotFoundException.class)
-    public final ResponseEntity<Object> handleUserNotFoundException(RecordNotFoundException ex, WebRequest request) {
+    public final ResponseEntity<Object> handleNotFoundException(RecordNotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse("Record Not Found", details);
+        EntityErrorResponse error = new EntityErrorResponse(HttpStatus.NOT_FOUND.value(), details, LocalDateTime.now());
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RecordNotSavedException.class)
+    public final ResponseEntity<Object> handleNotSavedException(RecordNotSavedException ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        EntityErrorResponse error = new EntityErrorResponse(400, details, LocalDateTime.now());
+        return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -38,7 +40,9 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getAllErrors()) {
             details.add(error.getDefaultMessage());
         }
-        ErrorResponse error = new ErrorResponse("Validation Failed", details);
+        EntityErrorResponse error = new EntityErrorResponse(HttpStatus.BAD_REQUEST.value(), details, LocalDateTime.now());
         return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
     }
+
+
 }

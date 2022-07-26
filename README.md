@@ -1,6 +1,6 @@
-Aplikacja do obsługi konferencji IT.
+**Aplikacja do obsługi konferencji IT.**
 
-Założenia:
+**Założenia**
 1.	Konferencja trwa 1 dzień: 1 czerwca 2021. 
 2.	Rozpoczyna się o godzinie 10:00 a kończy o godzinie 15:45.
 3.	Każda prelekcja trwa 1h 45m (15 minut to przerwa na kawę):
@@ -10,86 +10,91 @@ Założenia:
 4.	W ramach konferencji obsługiwane są 3 różne ścieżki tematyczne prowadzone równolegle. Jeśli użytkownik zapisze się w danej ścieżce na daną godzinę, to nie może już uczęszczać w tym okresie w innej ścieżce, natomiast o innej godzinie najbardziej może wybrać inną ścieżkę. 
 5.	Każda prelekcja może pomieścić maksymalnie 5 słuchaczy. 
 
-Aplikacja wykorzystuje: Java 18, Spring Boot(web, security, jpa, test), H2, Junit, Maven, REST.  
+**Aplikacja wykorzystuje**
 
-Baza danych: http://localhost:8080/h2-console (admin,admin) (dostęp do konsoli: user, root)
+Java 17, Spring Boot(web, security, jpa, test), H2, Junit, Mockito, Maven, Rest Assured.  
 
-Uruchomienie: spring-boot:run
+**Baza danych**
 
+http://localhost:8080/h2-console (admin,admin) (dostęp do konsoli: user, root)
 
+**Uruchomienie**
 
+.\mvnw spring-boot:run
 
-
-Funkcjonalność:
+**Role**
 
 (ROLA) - oznacza, że do wykonania danego zapytania wymagana jest odpowiednia rola
 
-"user1", "password1" (USER)
+* "user1", "password1" (USER)
 
-"admin", "admin" (ADMIN)
+* "admin", "admin" (ADMIN)
 
-"prof", "prof" (PROF)
+* "prof", "prof" (PROF)
 
+**Konferencja**
 
-KONFERENCJA
+* GET "/conference" - Plan konferencji ("USER", "PROF", "ADMIN")
 
+* POST "/conference" - Dodaj godzine wykładu ("ADMIN")
 
+* PUT "/conference" - Edytuj konferencje("ADMIN")
+ 
+  { 
+  "start_time":   "31/07/2023 10:00:00" ,
+  "end_time": "31/08/2023 10:00:00",
+   "themes": 3
+  }
 
-GET "/" - Plan konferencji ("USER", "PROF", "ADMIN")
+* DELETE "/conference/{number}" - Usuń godzine wykładu ("ADMIN")
 
+**Wykłady**
 
+* GET "/lectures" - Lista wykładów ("USER", "PROF", "ADMIN")
 
-WYKŁADY
+* GET "/lectures/{id}" - Wykład po id ("ADMIN")
 
+* GET "/lectures/titles" - Lista wykładów (tytuły i data rozpoczęcia) ("ADMIN")
 
+* GET "/lectures/popularity" - Popularność wykładów ("PROF", "ADMIN")
 
-GET "/lectures/" - Lista wykładów (tytuły) ("USER", "PROF", "ADMIN")
+* GET "/lectures/theme_popularity" - Popularność tematów ("PROF", "ADMIN")
 
-GET "/lectures/show/" - Lista wykładów  ("ADMIN")
+* POST "/lectures" - Wykład w body, dodanie nowego wykładu ("ADMIN")
 
-GET "/lectures/show/{id}" - Lista wykładów  ("ADMIN")
+* PUT "/lectures/{id}" - Wykład w body, edycja lub dodanie nowego wykładu ("ADMIN")
 
-GET "/lectures/popularity" - Popularność wykładów ("PROF", "ADMIN")
+* PUT "/lectures/{id}/users" - Login i email w body, dodanie użytkownika do danego wykładu ("USER", "ADMIN")
 
-GET "/lectures/theme_popularity" - Popularność tematów ("PROF", "ADMIN")
-
-GET "/lectures/user/" - Login w body, lista wykładów danego użytkownika ("USER", "ADMIN")
-
-{
-        "username": "user1"  }
-
-POST "/lectures/add/" - Lektura w body, dodanie nowej lektury ("ADMIN")
-
-PUT "/lectures/add/{id}" - Lektura w body, edycja lub dodanie nowej wykładu ("ADMIN")
-
-PUT "/lectures/{id}/add_user" - Login i email w body, dodanie użytkownika do danego wykładu ("USER", "ADMIN")
-
-{
+  {
         "username": "user1",
         "email": "user1@emaiddasdasdl.com"
+ }
+
+* PUT "/lectures/{id}/users/cancellation" - Login i email w body, usunięcie użytkownika z danego wykładu  ("USER", "PROF", "ADMIN")
+
+  {
+"username": "user1",
+"email": "user1@emaiddasdasdl.com"
+  }
+
+**Użytkownik**
+
+* GET "/users" - Lista użytkowników (login i email) ("PROF", "ADMIN")
+
+* GET "/users/details" - Lista użytkowników ("ADMIN")
+
+* GET "/users/details/{id}" - Użytkownik po id ("ADMIN")
+
+* GET "/users/lectures?username="  lista wykładów danego użytkownika ("USER", "ADMIN")
+
+* POST "/users" - User w body, dodanie nowego użytkownika ("ADMIN")
+
+* PUT "/users/{id}" - User w body, edycja lub dodanie nowego użytkownika ("ADMIN")
+
+* PUT "users/change_email" - Edycja emaila ("USER",ADMIN")
+
+  { 
+"old_email": "user1@email.com",
+"new_email": "user@email.com"
 }
-
-PUT "/lectures/{id}/cancel_user" - Login i email w body, usuniecie użytkownika z danego wykładu  ("USER", "PROF", "ADMIN")
-
-DELETE "lectures/delete/{id}" - Usunięcie wykładów ("ADMIN")
-
-
-
-
-USER
-
-GET "/users/" - Lista użytkowników (login i email) ("PROF", "ADMIN")
-
-GET "/users/show/" - Lista użytkowników ("ADMIN")
-
-GET "/users/show/{id}" - Lista użytkowników ("ADMIN")
-
-PUT "/users/email/" - Stary email i nowy w body, zmiana emaila ("USER", "ADMIN")
-
-{"old_email":"user1@email.com","new_email":"user1@emaiddasdasdl.com"}
-
-POST "/users/add/" - User w body, dodanie nowego użytkownika ("ADMIN")
-
-PUT "/users/add/{id}" - User w body, edycja lub dodanie nowego użytkownika ("ADMIN")
-
-DELETE "users/delete/{id}" - Usunięcie użytkownika ("ADMIN")

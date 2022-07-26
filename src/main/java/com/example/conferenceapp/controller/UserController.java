@@ -1,10 +1,8 @@
 package com.example.conferenceapp.controller;
 
-import com.example.conferenceapp.exceptions.RecordNotFoundException;
-import com.example.conferenceapp.exceptions.UserServiceException;
-import com.example.conferenceapp.model.User;
-import com.example.conferenceapp.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.conferenceapp.exception.RecordNotFoundException;
+import com.example.conferenceapp.model.user.User;
+import com.example.conferenceapp.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,49 +21,43 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/show")
-    public List<User> getAllUsers() throws RecordNotFoundException {
+    @GetMapping(path = "/details", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<User>> getAllUsers() throws RecordNotFoundException {
 
-        List<User> users = userService.get();
-        if (users == null) {
-            throw new RecordNotFoundException("No users");
-        }
-        return users;
-
+        return new ResponseEntity<>(userService.get(), HttpStatus.OK);
 
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getAllUsersLoginAndEmails() throws RecordNotFoundException {
-
-        return userService.get_LoginsAndEmails();
-
-
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getUserLoginsAndEmails() {
+        return new ResponseEntity<>(userService.getLoginsAndEmailsList(), HttpStatus.OK);
     }
 
-    @GetMapping("/show/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
+
+    @GetMapping(path = "/lectures", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getLectureByUserLogin(@RequestParam("username") String name) {
+        return (userService.getLectures(name));
+    }
+
+    @GetMapping(path = "/details/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<User> addUser(@RequestBody User user) throws UserServiceException {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> addUser(@RequestBody User user) {
         return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/add/{id}")
-    public ResponseEntity<User> addOrUpdateUser(@PathVariable("id") long id, @RequestBody User user) throws UserServiceException {
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> addOrUpdateUser(@PathVariable("id") Long id, @RequestBody User user) {
         return new ResponseEntity<>(userService.updateOrSave(id, user), HttpStatus.OK);
     }
 
-    @PutMapping(path = "/email")
-    public ResponseEntity<User> addOrUpdateUser(@RequestBody Map<String, String> data) throws UserServiceException {
+    @PutMapping(path = "/change_email", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> addOrUpdateUser(@RequestBody Map<String, String> data) {
         return new ResponseEntity<>(userService.updateEmail(data.get("old_email"), data.get("new_email")), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) {
-        userService.delete(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
-    }
+
 }

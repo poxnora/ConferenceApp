@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class toFile {
+public class ToFile {
 
     public static void saveFile(String filename, String massage) throws IOException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy  HH:mm:ss");

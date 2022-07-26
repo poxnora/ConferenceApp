@@ -1,7 +1,6 @@
-package com.example.conferenceapp.model;
+package com.example.conferenceapp.model.user;
 
 import com.example.conferenceapp.dao.UserDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 

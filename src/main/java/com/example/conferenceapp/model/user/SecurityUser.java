@@ -1,4 +1,4 @@
-package com.example.conferenceapp.model;
+package com.example.conferenceapp.model.user;
 
 
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class SecurityUser implements UserDetails {
 
-    private User user;
+    private final User user;
 
     public SecurityUser(User user) {
         this.user = user;
@@ -17,7 +17,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> user.getAuthority());
+        return List.of(user::getAuthority);
     }
 
     @Override

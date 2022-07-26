@@ -1,10 +1,9 @@
 package com.example.conferenceapp.controller;
 
-import com.example.conferenceapp.exceptions.LectureServiceException;
-import com.example.conferenceapp.exceptions.UserServiceException;
+import com.example.conferenceapp.exception.LectureServiceException;
+import com.example.conferenceapp.exception.UserServiceException;
 import com.example.conferenceapp.model.Lecture;
-import com.example.conferenceapp.service.LectureService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.conferenceapp.service.lecture.LectureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,66 +17,57 @@ import java.util.Map;
 @RequestMapping(path = "/lectures")
 public class LectureController {
 
+    private final LectureService lectureService;
+
     public LectureController(LectureService lectureService) {
         this.lectureService = lectureService;
     }
 
-    private final LectureService lectureService;
-
-    @GetMapping("/show")
-    public List<Lecture> getAllLectures() {
-        return lectureService.get();
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Lecture>> getAllLectures() {
+        return new ResponseEntity<>(lectureService.get(), HttpStatus.OK);
     }
 
-    @GetMapping("/show/{id}")
-    public ResponseEntity<Lecture> getLectureById(@PathVariable("id") long id) {
+    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Lecture> getLectureById(@PathVariable("id") Long id) {
         return new ResponseEntity<>(lectureService.getById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getLectureTitles() {
-        return lectureService.get_plan();
+    @GetMapping(path = "/titles", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLectureTitles() {
+        return new ResponseEntity<>(lectureService.getPlan(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/popularity", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getLecturePopularity() {
-        return lectureService.lecturePopularity();
+    @GetMapping(path = "/popularity", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLecturePopularity() {
+        return new ResponseEntity<>(lectureService.lecturePopularity(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/theme_popularity", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getLectureThemePopularity() {
-        return lectureService.themePopularity();
+    @GetMapping(path = "/theme_popularity", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getLectureThemePopularity() {
+        return new ResponseEntity<>(lectureService.themePopularity(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getLectureByUserLogin(@RequestBody Map<String, String> data) throws UserServiceException {
-        return (lectureService.getLectures(data.get("username")));
-    }
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<Lecture> addLecture(@RequestBody Lecture lecture) throws LectureServiceException {
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Lecture> addLecture(@RequestBody Lecture lecture) {
         return new ResponseEntity<>(lectureService.save(lecture), HttpStatus.CREATED);
     }
 
-    @PutMapping(path = "/add/{id}")
-    public ResponseEntity<Lecture> addOrUpdateLecture(@PathVariable("id") long id, @RequestBody Lecture lecture) throws LectureServiceException {
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Lecture> addOrUpdateLecture(@PathVariable("id") Long id, @RequestBody Lecture lecture) {
         return new ResponseEntity<>(lectureService.updateOrSave(id, lecture), HttpStatus.OK);
     }
 
-    @PutMapping(path = "{id}/add_user")
-    public ResponseEntity<Lecture> addUser(@PathVariable("id") long id, @RequestBody Map<String, String> data) throws UserServiceException, LectureServiceException, IOException {
+    @PutMapping(path = "/{id}/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Lecture> addUser(@PathVariable("id") Long id, @RequestBody Map<String, String> data) throws IOException {
         return new ResponseEntity<>(lectureService.addUser(id, data.get("username"), data.get("email")), HttpStatus.OK);
     }
 
-    @PutMapping(path = "{id}/cancel_user")
-    public ResponseEntity<Lecture> cancelLectureUser(@PathVariable("id") long id, @RequestBody Map<String, String> data) throws UserServiceException, LectureServiceException {
+    @PutMapping(path = "/{id}/users/cancellation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Lecture> cancelLectureUser(@PathVariable("id") Long id, @RequestBody Map<String, String> data) {
         return new ResponseEntity<>(lectureService.cancelUser(id, data.get("username"), data.get("email")), HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/delete/{id}")
-    public ResponseEntity<String> deleteLecture(@PathVariable("id") long id) {
-        lectureService.delete(id);
-        return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
-    }
 
 }

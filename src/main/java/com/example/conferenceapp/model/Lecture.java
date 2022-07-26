@@ -1,5 +1,7 @@
 package com.example.conferenceapp.model;
 
+import com.example.conferenceapp.model.user.User;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,15 +12,15 @@ public class Lecture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false, length = 1)
-    private int theme;
+    private Integer theme;
 
     @Column(nullable = false, length = 1)
-    private int starts;
+    private Integer starts;
     @ManyToMany(cascade = {CascadeType.ALL}, mappedBy = "lectures")
     private Set<User> participants = new HashSet<>();
 
@@ -26,7 +28,7 @@ public class Lecture {
 
     }
 
-    public Lecture(long id, String title, int theme, int starts) {
+    public Lecture(Long id, String title, Integer theme, Integer starts) {
         this.id = id;
         this.title = title;
         this.theme = theme;
@@ -34,7 +36,7 @@ public class Lecture {
 
     }
 
-    public Lecture(long id, String title, int theme, int starts, Set<User> participants) {
+    public Lecture(Long id, String title, Integer theme, Integer starts, Set<User> participants) {
         this.id = id;
         this.title = title;
         this.theme = theme;
@@ -43,11 +45,11 @@ public class Lecture {
     }
 
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -59,19 +61,19 @@ public class Lecture {
         this.title = title;
     }
 
-    public int getTheme() {
+    public Integer getTheme() {
         return theme;
     }
 
-    public void setTheme(int theme) {
+    public void setTheme(Integer theme) {
         this.theme = theme;
     }
 
-    public int getStarts() {
+    public Integer getStarts() {
         return starts;
     }
 
-    public void setStarts(int priority) {
+    public void setStarts(Integer priority) {
         this.starts = priority;
     }
 
@@ -85,22 +87,19 @@ public class Lecture {
 
 
     public String toString() {
-        if (starts == 1) {
+        try {
             return "{ " +
                     "\"title\"" + ":" + "\"" + title + "\"" +
-                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getFirst_lecture()) + "\"" +
-                    "},";
-        } else if (starts == 2) {
+                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getLectures_times().get(starts - 1)) + "\"" +
+                    "}";
+
+
+        } catch (Exception e) {
             return "{ " +
                     "\"title\"" + ":" + "\"" + title + "\"" +
-                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getSecond_lecture()) + "\"" +
-                    "},";
-        } else if (starts == 3) {
-            return "{ " +
-                    "\"title\"" + ":" + "\"" + title + "\"" +
-                    ", \"starts\"" + ":" + "\"" + Conference.getFormatter().format(Conference.getThird_lecture()) + "\"" +
-                    "},";
+                    ", \"starts\"" + ":" + "\"Not added\"" +
+                    "}";
         }
-        return "";
     }
 }
+

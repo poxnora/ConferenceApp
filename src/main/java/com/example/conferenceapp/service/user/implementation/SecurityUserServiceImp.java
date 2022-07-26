@@ -1,9 +1,8 @@
-package com.example.conferenceapp.service;
+package com.example.conferenceapp.service.user.implementation;
 
 import com.example.conferenceapp.dao.UserDao;
-import com.example.conferenceapp.model.SecurityUser;
-import com.example.conferenceapp.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.conferenceapp.model.user.SecurityUser;
+import com.example.conferenceapp.model.user.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,13 +11,12 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class SecurityUserService implements UserDetailsService {
-
+public class SecurityUserServiceImp implements UserDetailsService {
 
 
     private final UserDao userRepo;
 
-    public SecurityUserService(UserDao userRepo) {
+    public SecurityUserServiceImp(UserDao userRepo) {
         this.userRepo = userRepo;
     }
 
@@ -26,7 +24,7 @@ public class SecurityUserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
 
-        Optional<User> user = userRepo.findByusername(userName);
+        Optional<User> user = userRepo.findByUsername(userName);
         user.orElseThrow
                 (() -> new UsernameNotFoundException("not found" + userName));
 

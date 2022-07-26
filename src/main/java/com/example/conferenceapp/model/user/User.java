@@ -1,34 +1,33 @@
-package com.example.conferenceapp.model;
+package com.example.conferenceapp.model.user;
 
+import com.example.conferenceapp.model.Lecture;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 public class User {
 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name = "users_lectures", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "lecture_id")})
+    @JsonIgnore
+    List<Lecture> lectures = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(nullable = false, length = 30)
     private String username;
     @Column(nullable = false, length = 50)
     private String email;
     @Column(nullable = false, length = 70)
     private String password;
-
     @Column(nullable = false, length = 5)
     private String authority;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "users_lectures", joinColumns = {@JoinColumn(name = "user_id")}, inverseJoinColumns = {@JoinColumn(name = "lecture_id")})
-    @JsonIgnore
-    Set<Lecture> lectures = new HashSet<>();
-
-    public User(long id, String username, String email, String password, String authority, Set<Lecture> lectures) {
+    public User(Long id, String username, String email, String password, String authority, List<Lecture> lectures) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -46,7 +45,7 @@ public class User {
 
     }
 
-    public User(long id, String username, String email, String password, String authority) {
+    public User(Long id, String username, String email, String password, String authority) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -59,10 +58,6 @@ public class User {
 
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public String getAuthority() {
         return authority;
     }
@@ -71,16 +66,20 @@ public class User {
         this.authority = role;
     }
 
-    public Set<Lecture> getLectures() {
+    public List<Lecture> getLectures() {
         return lectures;
     }
 
-    public void setLectures(Set<Lecture> lectures) {
+    public void setLectures(List<Lecture> lectures) {
         this.lectures = lectures;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -103,16 +102,15 @@ public class User {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "{ " +
                 "\"username\"" + ":" + "\"" + username + "\"" +
                 ", \"email\"" + ":" + "\"" + email + "\"" +
-                "},";
-    }
-
-
-    public void setPassword(String password) {
-        this.password = password;
+                "}";
     }
 }

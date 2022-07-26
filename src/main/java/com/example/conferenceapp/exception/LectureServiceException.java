@@ -1,4 +1,4 @@
-package com.example.conferenceapp.exceptions;
+package com.example.conferenceapp.exception;
 
 
 public class LectureServiceException extends Exception {

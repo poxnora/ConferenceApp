@@ -1,8 +1,6 @@
-package com.example.conferenceapp.exceptions;
+package com.example.conferenceapp.exception;
 
 public class UserServiceException extends Exception {
-
-
 
     public UserServiceException() {
         super();
