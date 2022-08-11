@@ -4,7 +4,6 @@ import com.example.conferenceapp.dao.LectureDao;
 import com.example.conferenceapp.dao.UserDao;
 import com.example.conferenceapp.exception.RecordNotFoundException;
 import com.example.conferenceapp.exception.RecordNotSavedException;
-import com.example.conferenceapp.exception.UserServiceException;
 import com.example.conferenceapp.model.user.User;
 import com.example.conferenceapp.service.user.implementation.UserServiceImp;
 import org.junit.jupiter.api.Test;

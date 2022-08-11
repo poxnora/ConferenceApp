@@ -1,7 +1,5 @@
 package com.example.conferenceapp.controller;
 
-import com.example.conferenceapp.exception.LectureServiceException;
-import com.example.conferenceapp.exception.UserServiceException;
 import com.example.conferenceapp.model.Lecture;
 import com.example.conferenceapp.service.lecture.LectureService;
 import org.springframework.http.HttpStatus;

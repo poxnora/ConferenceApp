@@ -95,18 +95,18 @@ public class LectureServiceImp implements LectureService {
             if (lecture_modified.getParticipants().size() < Conference.getParticipants_per_lecture()) {
                 Optional<User> user = userDao.findByEmail(email);
                 if ((userDao.findByUsername(login).equals(user)) && user.isPresent()) {
-                        for (Lecture l : user.get().getLectures()) {
-                            if (Objects.equals(l.getStarts(), lecture_modified.getStarts()))
-                                throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
-                        }
-                        Set<User> new_participants = lecture_modified.getParticipants();
-                        List<Lecture> new_lectures = user.get().getLectures();
-                        new_participants.add(user.get());
-                        new_lectures.add(lecture_modified);
-                        lecture_modified.setParticipants(new_participants);
-                        user.get().setLectures(new_lectures);
-                        ToFile.saveFile("powiadomienia.txt", user.get().getEmail() + " Succesful reservation " + lecture_modified.getTitle());
-                        return lectureDao.save(lecture_modified);
+                    for (Lecture l : user.get().getLectures()) {
+                        if (Objects.equals(l.getStarts(), lecture_modified.getStarts()))
+                            throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
+                    }
+                    Set<User> new_participants = lecture_modified.getParticipants();
+                    List<Lecture> new_lectures = user.get().getLectures();
+                    new_participants.add(user.get());
+                    new_lectures.add(lecture_modified);
+                    lecture_modified.setParticipants(new_participants);
+                    user.get().setLectures(new_lectures);
+                    ToFile.saveFile("powiadomienia.txt", user.get().getEmail() + " Succesful reservation " + lecture_modified.getTitle());
+                    return lectureDao.save(lecture_modified);
 
 
                 } else {
@@ -175,6 +175,7 @@ public class LectureServiceImp implements LectureService {
         }
         return sb.toString();
     }
+
     @Override
     public String themePopularity() {
         List<Lecture> lectures = lectureDao.findAll();

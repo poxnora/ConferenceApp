@@ -145,8 +145,7 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public void validateUser(User user)
-    {
+    public void validateUser(User user) {
         List<User> users = userDao.findAll();
         for (User u : users) {
             if (u.getUsername().equals(user.getUsername()) || u.getEmail().equals(user.getEmail())) {

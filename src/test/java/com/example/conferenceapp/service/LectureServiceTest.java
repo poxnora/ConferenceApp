@@ -2,10 +2,8 @@ package com.example.conferenceapp.service;
 
 import com.example.conferenceapp.dao.LectureDao;
 import com.example.conferenceapp.dao.UserDao;
-import com.example.conferenceapp.exception.LectureServiceException;
 import com.example.conferenceapp.exception.RecordNotFoundException;
 import com.example.conferenceapp.exception.RecordNotSavedException;
-import com.example.conferenceapp.exception.UserServiceException;
 import com.example.conferenceapp.model.Lecture;
 import com.example.conferenceapp.model.user.User;
 import com.example.conferenceapp.service.lecture.implementation.LectureServiceImp;
