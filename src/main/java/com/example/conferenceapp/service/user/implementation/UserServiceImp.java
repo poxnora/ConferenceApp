@@ -60,7 +60,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User save(User user) {
-
+        validateUser(user);
         if (EmailRegex.matchEmail(user.getEmail()))
             throw new RecordNotSavedException("Invalid email");
         User user1 = new User();

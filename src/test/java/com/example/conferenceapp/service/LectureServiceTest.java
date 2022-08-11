@@ -130,7 +130,6 @@ public class LectureServiceTest {
     void shouldNotReturnAddedOrUpdatedLectureInvalidTheme() {
         Lecture lecture = new Lecture(1L, "l1", 1, 1);
         Lecture updated = new Lecture(1L, "l2", 4, 1);
-        when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.updateOrSave(1L, updated)).withMessage("Invalid theme");
     }
 
@@ -141,12 +140,14 @@ public class LectureServiceTest {
                 new Lecture(2L, "l2", 1, 1),
                 new Lecture(2L, "l2", 1, 1),
                 new Lecture(2L, "l2", 1, 1),
+                new Lecture(2L, "l2", 1, 1),
+                new Lecture(2L, "l2", 1, 1),
                 new Lecture(3L, "l3", 1, 1)
         );
         Lecture updated = new Lecture(1L, "l2", 1, 1);
-        when(lectureDao.findById(anyLong())).thenReturn(Optional.empty());
         when(lectureDao.findAll()).thenReturn(lectures);
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.updateOrSave(1L, updated)).withMessage("Maximum lectures with that theme reached");
+        verify(lectureDao).findAll();
     }
 
     @Test
