@@ -10,6 +10,6 @@ public class EmailRegex {
 
     public static boolean matchEmail(String email) {
         Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
+        return !matcher.matches();
     }
 }

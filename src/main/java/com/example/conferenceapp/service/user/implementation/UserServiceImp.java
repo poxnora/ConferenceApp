@@ -60,18 +60,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     public User save(User user) {
-        List<User> users = userDao.findAll();
-        for (User u : users) {
-            if (u.getUsername().equals(user.getUsername()) || u.getEmail().equals(user.getEmail())) {
-                throw new RecordNotSavedException("User already exists");
-            } else if (user.getLectures().size() > Conference.getParticipants_per_lecture() || user.getPassword().length() < 6) {
-                throw new RecordNotSavedException("Invalid user details");
-            }
-        }
-        if (!EmailRegex.matchEmail(user.getEmail()))
+
+        if (EmailRegex.matchEmail(user.getEmail()))
             throw new RecordNotSavedException("Invalid email");
-
-
         User user1 = new User();
         user1.setEmail(user.getEmail());
         user1.setUsername(user.getUsername());
@@ -84,17 +75,9 @@ public class UserServiceImp implements UserService {
     @Override
     public User updateOrSave(Long id, User user) {
         Optional<User> user1 = userDao.findById(id);
-        List<User> users = userDao.findAll();
-        for (User u : users) {
+        validateUser(user);
 
-            if (u.getUsername().equals(user.getUsername()) || u.getEmail().equals(user.getEmail())) {
-                throw new RecordNotSavedException("User already exists");
-            } else if (user.getLectures().size() > Conference.getParticipants_per_lecture() || user.getPassword().length() < 6) {
-                throw new RecordNotSavedException("Invalid user details");
-            }
-        }
-
-        if (!EmailRegex.matchEmail(user.getEmail()))
+        if (EmailRegex.matchEmail(user.getEmail()))
             throw new RecordNotSavedException("Invalid email");
 
         if (user1.isPresent()) {
@@ -152,7 +135,7 @@ public class UserServiceImp implements UserService {
         }
         Optional<User> user1 = userDao.findByEmail(old_email);
         if (user1.isPresent()) {
-            if (!EmailRegex.matchEmail(new_email))
+            if (EmailRegex.matchEmail(new_email))
                 throw new RecordNotSavedException("Invalid email");
             User user_modified = user1.get();
             user_modified.setEmail(new_email);
@@ -162,4 +145,15 @@ public class UserServiceImp implements UserService {
         }
     }
 
+    public void validateUser(User user)
+    {
+        List<User> users = userDao.findAll();
+        for (User u : users) {
+            if (u.getUsername().equals(user.getUsername()) || u.getEmail().equals(user.getEmail())) {
+                throw new RecordNotSavedException("User already exists");
+            } else if (user.getLectures().size() > Conference.getParticipants_per_lecture() || user.getPassword().length() < 6) {
+                throw new RecordNotSavedException("Invalid user details");
+            }
+        }
+    }
 }

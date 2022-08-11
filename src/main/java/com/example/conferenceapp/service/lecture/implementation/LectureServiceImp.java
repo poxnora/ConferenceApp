@@ -60,58 +60,24 @@ public class LectureServiceImp implements LectureService {
     @Override
     public Lecture save(Lecture lecture) {
 
-        List<Lecture> lectures = lectureDao.findAll();
-        if (lecture.getTheme() < 1 || lecture.getTheme() > Conference.getThemes())
-            throw new RecordNotSavedException("Invalid theme");
-        int count = 0;
-        for (Lecture l : lectures) {
-            if (Objects.equals(l.getTheme(), lecture.getTheme())) {
-
-                if (count > Conference.getThemes()) {
-                    throw new RecordNotSavedException("Maximum lectures with that theme reached");
-                }
-                count += 1;
-            }
-        }
+        validateLecture(lecture);
         return lectureDao.save(lecture);
     }
 
     @Override
     public Lecture updateOrSave(Long id, Lecture lecture) {
+        validateLecture(lecture);
         Optional<Lecture> lectureOptional = lectureDao.findById(id);
-        List<Lecture> lectures = lectureDao.findAll();
-        if (lecture.getTheme() < 1 || lecture.getTheme() > Conference.getThemes())
-            throw new RecordNotSavedException("Invalid theme");
-        int count = 0;
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
-            for (Lecture l : lectures) {
-                if (Objects.equals(l.getTheme(), lecture.getTheme())) {
-
-                    if (count > Conference.getThemes()) {
-                        throw new RecordNotSavedException("Maximum lectures with that theme reached");
-                    }
-                    count += 1;
-                }
-            }
-
             lecture_modified.setParticipants(lecture.getParticipants());
             lecture_modified.setTheme(lecture.getTheme());
             lecture_modified.setTitle(lecture.getTitle());
             lecture_modified.setStarts(lecture.getStarts());
             return lectureDao.save(lecture_modified);
+
         } else {
             Lecture lecture_new = new Lecture();
-            for (Lecture l : lectures) {
-                if (Objects.equals(l.getTheme(), lecture.getTheme())) {
-
-                    if (count > Conference.getThemes()) {
-                        throw new RecordNotSavedException("Maximum lectures with that theme reached");
-                    }
-                    count += 1;
-                }
-            }
-
             lecture_new.setParticipants(lecture.getParticipants());
             lecture_new.setTheme(lecture.getTheme());
             lecture_new.setTitle(lecture.getTitle());
@@ -127,28 +93,22 @@ public class LectureServiceImp implements LectureService {
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
             if (lecture_modified.getParticipants().size() < Conference.getParticipants_per_lecture()) {
-                Optional<User> user_email = userDao.findByEmail(email);
-                Optional<User> user_login = userDao.findByUsername(login);
-                if (user_email.isPresent() && user_login.isPresent()) {
-                    User user_modified = user_email.get();
-                    User user2 = user_login.get();
-                    if (user_modified == user2) {
-                        for (Lecture l : user_modified.getLectures()) {
+                Optional<User> user = userDao.findByEmail(email);
+                if ((userDao.findByUsername(login).equals(user)) && user.isPresent()) {
+                        for (Lecture l : user.get().getLectures()) {
                             if (Objects.equals(l.getStarts(), lecture_modified.getStarts()))
                                 throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
                         }
                         Set<User> new_participants = lecture_modified.getParticipants();
-                        List<Lecture> new_lectures = user_modified.getLectures();
-                        new_participants.add(user_modified);
+                        List<Lecture> new_lectures = user.get().getLectures();
+                        new_participants.add(user.get());
                         new_lectures.add(lecture_modified);
                         lecture_modified.setParticipants(new_participants);
-                        user_modified.setLectures(new_lectures);
-                        ToFile.saveFile("powiadomienia.txt", user_modified.getEmail() + " Succesful reservation " + lecture_modified.getTitle());
+                        user.get().setLectures(new_lectures);
+                        ToFile.saveFile("powiadomienia.txt", user.get().getEmail() + " Succesful reservation " + lecture_modified.getTitle());
                         return lectureDao.save(lecture_modified);
 
-                    } else {
-                        throw new RecordNotSavedException("Invalid login or email");
-                    }
+
                 } else {
                     throw new RecordNotSavedException("Invalid login or email");
                 }
@@ -167,19 +127,17 @@ public class LectureServiceImp implements LectureService {
         Optional<Lecture> lectureOptional = lectureDao.findById(id);
         if (lectureOptional.isPresent()) {
             Lecture lecture_modified = lectureOptional.get();
-            Optional<User> user_email = userDao.findByEmail(email);
-            Optional<User> user_login = userDao.findByUsername(login);
-            if (user_email.isPresent() && user_login.isPresent()) {
-                if (user_email.get().equals(user_login.get())) {
-                    User user = user_email.get();
-                    for (Lecture l : user.getLectures()) {
+            Optional<User> user = userDao.findByEmail(email);
+            if (user.isPresent()) {
+                if (user.equals(userDao.findByUsername(login))) {
+                    for (Lecture l : user.get().getLectures()) {
                         if (l.equals(lecture_modified)) {
-                            List<Lecture> new_lectures = user.getLectures();
+                            List<Lecture> new_lectures = user.get().getLectures();
                             new_lectures.remove(l);
                             Set<User> new_participants = lecture_modified.getParticipants();
-                            new_participants.remove(user);
+                            new_participants.remove(user.get());
                             lecture_modified.setParticipants(new_participants);
-                            user.setLectures(new_lectures);
+                            user.get().setLectures(new_lectures);
                             return lectureDao.save(lecture_modified);
                         }
                     }
@@ -196,6 +154,7 @@ public class LectureServiceImp implements LectureService {
 
     }
 
+    @Override
     public String lecturePopularity() {
         List<Lecture> lectures = lectureDao.findAll();
         StringBuilder sb = new StringBuilder();
@@ -216,7 +175,7 @@ public class LectureServiceImp implements LectureService {
         }
         return sb.toString();
     }
-
+    @Override
     public String themePopularity() {
         List<Lecture> lectures = lectureDao.findAll();
         StringBuilder sb = new StringBuilder();
@@ -244,5 +203,20 @@ public class LectureServiceImp implements LectureService {
         return sb.toString();
     }
 
+    public void validateLecture(Lecture lecture) {
+        List<Lecture> lectures = lectureDao.findAll();
+        int count = 0;
+        if (lecture.getTheme() < 1 || lecture.getTheme() > Conference.getThemes())
+            throw new RecordNotSavedException("Invalid theme");
+        for (Lecture l : lectures) {
+            if (Objects.equals(l.getTheme(), lecture.getTheme())) {
+
+                if (count > Conference.getThemes()) {
+                    throw new RecordNotSavedException("Maximum lectures with that theme reached");
+                }
+                count += 1;
+            }
+        }
+    }
 
 }
