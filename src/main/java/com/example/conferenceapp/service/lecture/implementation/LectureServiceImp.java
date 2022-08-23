@@ -89,70 +89,55 @@ public class LectureServiceImp implements LectureService {
 
     @Override
     public Lecture addUser(Long id, String login, String email) throws IOException {
-        Optional<Lecture> lectureOptional = lectureDao.findById(id);
-        if (lectureOptional.isPresent()) {
-            Lecture lecture_modified = lectureOptional.get();
-            if (lecture_modified.getParticipants().size() < Conference.getParticipants_per_lecture()) {
-                Optional<User> user = userDao.findByEmail(email);
-                if ((userDao.findByUsername(login).equals(user)) && user.isPresent()) {
-                    for (Lecture l : user.get().getLectures()) {
-                        if (Objects.equals(l.getStarts(), lecture_modified.getStarts()))
-                            throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
-                    }
-                    Set<User> new_participants = lecture_modified.getParticipants();
-                    List<Lecture> new_lectures = user.get().getLectures();
-                    new_participants.add(user.get());
-                    new_lectures.add(lecture_modified);
-                    lecture_modified.setParticipants(new_participants);
-                    user.get().setLectures(new_lectures);
-                    ToFile.saveFile("powiadomienia.txt", user.get().getEmail() + " Succesful reservation " + lecture_modified.getTitle());
-                    return lectureDao.save(lecture_modified);
 
-
-                } else {
-                    throw new RecordNotSavedException("Invalid login or email");
+        Lecture lecture_modified = lectureDao.findById(id).orElseThrow(() -> new RecordNotFoundException("No lecture with id: " + id));
+        User userModified = userDao.findByEmail(email).orElseThrow(() -> new RecordNotSavedException("Invalid login or email"));
+        if (lecture_modified.getParticipants().size() < Conference.getParticipants_per_lecture()) {
+            if (userModified.getUsername().equals(login)) {
+                if (userDao.findByEmail(email).filter(u -> u.getLectures().stream().anyMatch(i -> i.getStarts().equals(lecture_modified.getStarts()))).isPresent()) {
+                    throw new RecordNotSavedException("Cannot enroll, you've already joined lecture at this hour");
                 }
+                Set<User> new_participants = lecture_modified.getParticipants();
+                List<Lecture> new_lectures = userModified.getLectures();
+                new_participants.add(userModified);
+                new_lectures.add(lecture_modified);
+                lecture_modified.setParticipants(new_participants);
+                userModified.setLectures(new_lectures);
+                ToFile.saveFile("powiadomienia.txt", userModified.getEmail() + " Succesful reservation " + lecture_modified.getTitle());
+                return lectureDao.save(lecture_modified);
+
+
             } else {
-                throw new RecordNotSavedException("Lecture with id: " + id + " is full");
+                throw new RecordNotSavedException("Invalid login or email");
             }
         } else {
-            throw new RecordNotFoundException("No lecture with id: " + id);
+            throw new RecordNotSavedException("Lecture with id: " + id + " is full");
         }
-
     }
 
 
     @Override
     public Lecture cancelUser(Long id, String login, String email) {
-        Optional<Lecture> lectureOptional = lectureDao.findById(id);
-        if (lectureOptional.isPresent()) {
-            Lecture lecture_modified = lectureOptional.get();
-            Optional<User> user = userDao.findByEmail(email);
-            if (user.isPresent()) {
-                if (user.equals(userDao.findByUsername(login))) {
-                    for (Lecture l : user.get().getLectures()) {
-                        if (l.equals(lecture_modified)) {
-                            List<Lecture> new_lectures = user.get().getLectures();
-                            new_lectures.remove(l);
-                            Set<User> new_participants = lecture_modified.getParticipants();
-                            new_participants.remove(user.get());
-                            lecture_modified.setParticipants(new_participants);
-                            user.get().setLectures(new_lectures);
-                            return lectureDao.save(lecture_modified);
-                        }
-                    }
-                    throw new RecordNotSavedException("User with login: " + login + " didn't join lecture with id: " + id);
-                } else {
-                    throw new RecordNotSavedException("Invalid login or email");
+        Lecture lecture_modified = lectureDao.findById(id).orElseThrow(() -> new RecordNotFoundException("No lecture with id: " + id));
+        User userModified = userDao.findByEmail(email).orElseThrow(() -> new RecordNotSavedException("Invalid login or email"));
+        if (userModified.getUsername().equals(login)) {
+            for (Lecture l : userModified.getLectures()) {
+                if (l.equals(lecture_modified)) {
+                    List<Lecture> new_lectures = userModified.getLectures();
+                    new_lectures.remove(l);
+                    Set<User> new_participants = lecture_modified.getParticipants();
+                    new_participants.remove(userModified);
+                    lecture_modified.setParticipants(new_participants);
+                    userModified.setLectures(new_lectures);
+                    return lectureDao.save(lecture_modified);
                 }
             }
-            throw new RecordNotSavedException("Invalid login or email");
-
+            throw new RecordNotSavedException("User with login: " + login + " didn't join lecture with id: " + id);
         } else {
-            throw new RecordNotFoundException("No lecture with id: " + id);
+            throw new RecordNotSavedException("Invalid login or email");
         }
-
     }
+
 
     @Override
     public String lecturePopularity() {

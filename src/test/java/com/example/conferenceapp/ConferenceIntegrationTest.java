@@ -105,7 +105,7 @@ public class ConferenceIntegrationTest {
                     "start_time": "01/06/2023 10:00:00",
                     "end_time": "01/06/2023 15:45:00",
                     "themes":3,
-                    "participants":1
+                    "participants":5
                 }""";
         validatableResponse = given()
                 .contentType(ContentType.JSON).body(conference)

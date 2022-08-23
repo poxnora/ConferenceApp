@@ -19,8 +19,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LectureServiceTest {
@@ -150,57 +149,49 @@ public class LectureServiceTest {
 
     @Test
     void shouldReturnLectureWithAddedUser() throws IOException {
-        User user = new User(5L, "user5", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        Lecture lecture = new Lecture(1L, "l1", 1, 1, new HashSet<>());
+        User user = new User(56L, "user56", "user56@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        Lecture lecture = new Lecture(9L, "l1", 1, 1, new HashSet<>());
         Set<User> userSet = new HashSet<>();
         userSet.add(user);
-        Lecture updated = new Lecture(1L, "l2", 2, 1, userSet);
+        Lecture updated = new Lecture(9L, "l2", 2, 1, userSet);
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userDao.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(lectureDao.save(lecture)).thenReturn(updated);
-        Lecture new_lecture = lectureService.addUser(1L, user.getUsername(), user.getEmail());
+        Lecture new_lecture = lectureService.addUser(lecture.getId(), user.getUsername(), user.getEmail());
         assertThat(new_lecture.getParticipants()).isEqualTo(userSet);
         verify(lectureDao).save(any(Lecture.class));
         verify(lectureDao).findById(anyLong());
-        verify(userDao).findByUsername(anyString());
-        verify(userDao).findByEmail(anyString());
+        verify(userDao,atLeast(2)).findByEmail(anyString());
     }
 
     @Test
     void shouldNotReturnLectureWithAddedUserAlreadyEnrolled() {
-        User user = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        User user = new User(9L, "user9", "user9@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
         Set<User> userSet = new HashSet<>();
-        List<Lecture> lectureSet = new ArrayList<>();
         userSet.add(user);
-        Lecture lecture = new Lecture(9L, "l1", 1, 1, userSet);
-        lectureSet.add(lecture);
-        user.setLectures(lectureSet);
+        Lecture lecture = new Lecture(7L, "l1", 1, 1, userSet);
+        List<Lecture> lectureList = new ArrayList<>();
+        lectureList.add(lecture);
+        user.setLectures(lectureList);
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userDao.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
-        assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.addUser(5L, user.getUsername(), user.getEmail())).withMessage("Cannot enroll, you've already joined lecture at this hour");
+        assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.addUser(lecture.getId(), user.getUsername(), user.getEmail())).withMessage("Cannot enroll, you've already joined lecture at this hour");
 
     }
 
     @Test
     void shouldNotReturnLectureWithAddedUserFull() {
-        User user = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        User user1 = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        User user2 = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        User user3 = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        User user = new User(5L, "user5", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        User user1 = new User(5L, "user5", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        User user2 = new User(5L, "user5", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
+        User user3 = new User(5L, "user5", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
         User user4 = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        Set<User> userSet = new HashSet<>();
-        List<Lecture> lectureSet = new ArrayList<>();
-        userSet.add(user);
-        userSet.add(user1);
-        userSet.add(user2);
-        userSet.add(user3);
-        userSet.add(user4);
+        Set<User> userSet = Set.of(user,user1,user2,user3,user4);
         Lecture lecture = new Lecture(1L, "l1", 1, 1, userSet);
-        lectureSet.add(lecture);
+        List<Lecture> lectureSet = List.of(lecture);
         user.setLectures(lectureSet);
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.addUser(1L, user.getUsername(), user.getEmail())).withMessage("Lecture with id: " + lecture.getId() + " is full");
 
     }
@@ -215,7 +206,6 @@ public class LectureServiceTest {
         lectureSet.add(lecture);
         user.setLectures(lectureSet);
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userDao.findByUsername(anyString())).thenReturn(Optional.empty());
         when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.addUser(5L, user.getUsername(), user.getEmail())).withMessage("Invalid login or email");
 
@@ -232,15 +222,12 @@ public class LectureServiceTest {
         user.setLectures(lectureSet);
         Lecture updated = new Lecture(1L, "l2", 2, 1, new HashSet<>());
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userDao.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(lectureDao.save(lecture)).thenReturn(updated);
         Lecture l = lectureService.cancelUser(5L, user.getUsername(), user.getEmail());
         assertThat(l.getParticipants()).isSameAs(updated.getParticipants());
         verify(lectureDao).save(any(Lecture.class));
         verify(lectureDao).findById(anyLong());
-        verify(userDao).findByUsername(anyString());
-        verify(userDao).findByEmail(anyString());
     }
 
     @Test
@@ -248,11 +235,9 @@ public class LectureServiceTest {
         User user = new User(5L, "user1", "user5@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
         Lecture lecture = new Lecture(1L, "l1", 1, 1);
         when(lectureDao.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userDao.findByUsername(anyString())).thenReturn(Optional.of(user));
         when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> lectureService.cancelUser(1L, user.getUsername(), user.getEmail())).withMessage("User with login: " + user.getUsername() + " didn't join lecture with id: " + lecture.getId());
         verify(lectureDao).findById(anyLong());
-        verify(userDao).findByUsername(anyString());
         verify(userDao).findByEmail(anyString());
     }
 

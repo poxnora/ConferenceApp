@@ -192,16 +192,14 @@ public class UserServiceTest {
         User new_user = userService.updateEmail(user.getEmail(), user_updated.getEmail());
         assertThat(new_user).isEqualTo(user_updated);
         verify(userDao).save(any(User.class));
-        verify(userDao).findByEmail(anyString());
     }
 
     @Test
     void shouldNotReturnUserWithUpdatedEmailInvalidEmail() {
         User user = new User("user", "user@email.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
         User user_updated = new User("user", "useremail.com", "$2a$10$pErf5KdHABEg0KnIWDaR1ey8lB4b6lcS0V/mODGVZzSlwXXSIA3/m", "USER");
-        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(user));
         assertThatExceptionOfType(RecordNotSavedException.class).isThrownBy(() -> userService.updateEmail(user.getEmail(), user_updated.getEmail())).withMessage("Invalid email");
-        verify(userDao).findByEmail(anyString());
+
 
     }
 

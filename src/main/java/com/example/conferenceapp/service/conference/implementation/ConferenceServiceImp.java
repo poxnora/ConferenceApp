@@ -27,14 +27,15 @@ public class ConferenceServiceImp implements ConferenceService {
                 throw new RecordNotSavedException("Invalid date");
             if (end_time.isEqual(start_time))
                 throw new RecordNotSavedException("Invalid date");
-            Conference.setStart_time(start_time);
-            Conference.setEnd_time(end_time);
+
             if (themes <= 0) {
                 throw new RecordNotSavedException("Theme must be larger than 0");
             }
             if (participants <= 0 || participants > 1000) {
                 throw new RecordNotSavedException("Invalid participants number");
             }
+            Conference.setStart_time(start_time);
+            Conference.setEnd_time(end_time);
             Conference.setThemes(themes);
             Conference.setParticipants_per_lecture(participants);
             return Conference.allDetails();

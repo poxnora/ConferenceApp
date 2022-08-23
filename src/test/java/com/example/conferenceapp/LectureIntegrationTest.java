@@ -201,17 +201,17 @@ public class LectureIntegrationTest {
 
     @Test
     void shouldReturnLectureWithAddedUser() {
-        String user = "{\"id\":5,\"username\":\"user8\",\"email\":\"user8@email.com\"}";
+        String user = "{\"id\":5,\"username\":\"user5\",\"email\":\"user5@email.com\"}";
         validatableResponse = given()
                 .contentType(ContentType.JSON).body(user)
                 .auth()
                 .preemptive()
                 .basic("admin", "admin")
                 .when()
-                .put("/lectures/7/users")
+                .put("/lectures/9/users")
                 .then()
                 .assertThat().log().all().statusCode(200)
-                .body("participants.size()", equalTo(2));
+                .body("participants.size()", equalTo(4));
     }
 
     @Test
@@ -238,7 +238,7 @@ public class LectureIntegrationTest {
                 .preemptive()
                 .basic("admin", "admin")
                 .when()
-                .put("/lectures/5/users")
+                .put("/lectures/9/users")
                 .then()
                 .assertThat().log().all().statusCode(400)
                 .body("details[0]", equalTo("Invalid login or email"));

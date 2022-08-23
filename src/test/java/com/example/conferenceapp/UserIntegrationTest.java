@@ -315,8 +315,8 @@ public class UserIntegrationTest {
                 .when()
                 .put("/users/change_email")
                 .then()
-                .assertThat().log().all().statusCode(404)
-                .body("details[0]", equalTo("No user with email: email@email.com"));
+                .assertThat().log().all().statusCode(400)
+                .body("details[0]", equalTo("Invalid email"));
     }
 
 
